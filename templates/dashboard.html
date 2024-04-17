@@ -4,9 +4,41 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+      integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <h1>Dashboard</h1>
+
     <a href="{{ url_for('views_bp.logout') }}">Logout</a>
+
+    <p id="rain">
+      <b>RAIN INTENSITY: </b>
+    </p>
+
+    <p id="water">
+      <b>WATER LEVEL: </b>
+    </p>
+
+    <script type="text/javascript" charset="utf-8">
+      let socket = io();
+      const rain = document.querySelector("#rain");
+      const water = document.querySelector("#water");
+
+      socket.on("connect", function () {
+        console.log("I'm connected!");
+      });
+
+      socket.on("group11/rain", function (data) {
+        rain.innerHTML = `<b>RAIN INTENSITY: </b>${data}`;
+      });
+
+      socket.on("group11/water", function (data) {
+        water.innerHTML = `<b>WATER LEVEL: </b>${data}`;
+      });
+    </script>
   </body>
 </html>
