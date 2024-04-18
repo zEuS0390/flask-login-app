@@ -10,6 +10,9 @@ app = create_app()
 def connect_handler():
     if current_user.is_authenticated:
         print(current_user.username)
+        mqtt.subscribe("group11/rain") # subscribe topic
+        mqtt.subscribe("group11/water") # subscribe topic
+        mqtt.subscribe("group11/distance") # subscribe topic
     else:
         disconnect()
         return False  # not allowed here
@@ -18,8 +21,8 @@ def connect_handler():
 def handle_connect(client, userdata, flags, rc):
    if rc == 0:
         print('Connected successfully')
-        mqtt.subscribe("group11/rain") # subscribe topic
-        mqtt.subscribe("group11/water") # subscribe topic
+        # mqtt.subscribe("group11/rain") # subscribe topic
+        # mqtt.subscribe("group11/water") # subscribe topic
    else:
        print('Bad connection. Code:', rc)
     
@@ -30,10 +33,13 @@ def handle_mqtt_message(client, userdata, message):
     print(f"Received message on topic: {topic}, payload: {payload}")
     if topic == "group11/rain":
         socketio.emit(topic, payload)
-        pass
+        print(topic)
     elif topic == "group11/water":
         socketio.emit(topic, payload)
-        pass
+        print(topic)
+    elif topic == "group11/distance":
+        socketio.emit(topic, payload)
+        print(topic)
 
 app.register_blueprint(views_bp)
 

@@ -3,25 +3,28 @@ from db import db
 from app import bcrypt
 from forms import *
 
-from flask_login import login_required, login_user, logout_user
+from flask_login import login_user, logout_user, current_user
 
 views_bp = Blueprint("views_bp", __name__)
 
 @views_bp.route("/")
 def home():
-  return render_template("home.html")
+  if not current_user.is_authenticated:
+    return render_template("home.html")
+  return redirect(url_for("views_bp.dashboard"))
 
 @views_bp.route("/login", methods=["GET", "POST"])
 def login():
-  form = LoginForm()
-  
-  if form.validate_on_submit():
-    user = User.query.filter_by(username=form.username.data).first()
-    if user:
-      if bcrypt.check_password_hash(user.password, form.password.data):
-        login_user(user)
-        return redirect(url_for("views_bp.dashboard"))
-  return render_template("login.html", form=form)
+  if not current_user.is_authenticated:
+    form = LoginForm()
+    if form.validate_on_submit():
+      user = User.query.filter_by(username=form.username.data).first()
+      if user:
+        if bcrypt.check_password_hash(user.password, form.password.data):
+          login_user(user)
+          return redirect(url_for("views_bp.dashboard"))
+    return render_template("login.html", form=form)
+  return redirect(url_for("views_bp.dashboard"))
 
 @views_bp.route("/logout")
 def logout():
@@ -30,18 +33,19 @@ def logout():
 
 @views_bp.route("/register", methods=["GET", "POST"])
 def register():
-  form = RegisterForm()
-
-  if form.validate_on_submit():
-    hashed_password = bcrypt.generate_password_hash(form.password.data)
-    new_user = User(username=form.username.data, password=hashed_password)
-    db.session.add(new_user)
-    db.session.commit()
-    return redirect(url_for('views_bp.login'))
-
-  return render_template("register.html", form=form)
+  if not current_user.is_authenticated:
+    form = RegisterForm()
+    if form.validate_on_submit():
+      hashed_password = bcrypt.generate_password_hash(form.password.data)
+      new_user = User(username=form.username.data, password=hashed_password)
+      db.session.add(new_user)
+      db.session.commit()
+      return redirect(url_for('views_bp.login'))
+    return render_template("register.html", form=form)
+  return redirect(url_for("views_bp.dashboard"))
 
 @views_bp.route("/dashboard", methods=["GET", "POST"])
-@login_required
 def dashboard():
-  return render_template("dashboard.html")
+  if current_user.is_authenticated:
+    return render_template("dashboard.html")
+  return redirect(url_for("views_bp.login"))

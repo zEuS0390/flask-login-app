@@ -17,7 +17,8 @@ def create_app():
   app.config['TEMPLATES_AUTO_RELOAD'] = True
   app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
   app.config["SECRET_KEY"] = "my-secret"
-  app.config['MQTT_BROKER_URL'] = '54.179.42.111'  # use the free broker from HIVEMQ
+  # app.config['MQTT_BROKER_URL'] = '47.128.14.198'  # use the free broker from HIVEMQ
+  app.config['MQTT_BROKER_URL'] = 'localhost'
   app.config['MQTT_BROKER_PORT'] = 1883  # default port for non-tls connection
   app.config['MQTT_USERNAME'] = 'user'  # set the username here if you need authentication for the broker
   app.config['MQTT_PASSWORD'] = 'pass123'  # set the password here if the broker demands authentication
