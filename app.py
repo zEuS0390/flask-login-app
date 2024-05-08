@@ -3,6 +3,7 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mqtt import Mqtt
 from flask_socketio import SocketIO
+from datetime import timedelta
 
 from db import db, User
 
@@ -14,10 +15,10 @@ socketio = SocketIO()
 def create_app():
   app = Flask(__name__)
 
+  app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=1) # set the session cookie expiration by 1 day
   app.config['TEMPLATES_AUTO_RELOAD'] = True
   app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
-  app.config["SECRET_KEY"] = "my-secret"
-  # app.config['MQTT_BROKER_URL'] = '47.128.14.198'  # use the free broker from HIVEMQ
+  app.config["SECRET_KEY"] = "52deae35d7cc4ca4dec68135d1da56eb"
   app.config['MQTT_BROKER_URL'] = 'localhost'
   app.config['MQTT_BROKER_PORT'] = 1883  # default port for non-tls connection
   app.config['MQTT_USERNAME'] = 'user'  # set the username here if you need authentication for the broker

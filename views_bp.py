@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for, make_response, session
 from db import db
 from app import bcrypt
 from forms import *
@@ -22,6 +22,8 @@ def login():
       if user:
         if bcrypt.check_password_hash(user.password, form.password.data):
           login_user(user)
+          # enable session cookie expiration. the default is 31 days, but modify it to 1 day only in the app.config["PERMANENT_SESSION_LIFETIME"]
+          session.permanent = True
           return redirect(url_for("views_bp.dashboard"))
     return render_template("login.html", form=form)
   return redirect(url_for("views_bp.dashboard"))
